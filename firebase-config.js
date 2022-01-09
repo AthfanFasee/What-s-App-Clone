@@ -1,5 +1,6 @@
 import { initializeApp, getApps } from "firebase/app"
-import { getAuth } from "firebase/auth"
+import{getAuth, GoogleAuthProvider} from 'firebase/auth'
+import {getFirestore} from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiJT12Wifbake8f1y27jX_TyLRrjjXipQ",
@@ -16,5 +17,10 @@ if (!getApps().length) {
   firebaseApp = initializeApp(firebaseConfig)
 }
 
-export const app = firebaseApp
-export const auth = getAuth(app)
+const app = firebaseApp
+
+
+export const db = getFirestore(app)
+export const auth = getAuth(app) //after authentication this auth variable will be filled with unique information like user name and id. it can be used later on to identify which author we wanna log out and stuffs
+export const provider = new GoogleAuthProvider()
+
