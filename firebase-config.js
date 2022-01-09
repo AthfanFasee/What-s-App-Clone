@@ -1,9 +1,6 @@
-import { initializeApp } from "firebase/app";
-import{getAuth, GoogleAuthProvider} from 'firebase/auth'
-import {getFirestore} from 'firebase/firestore'
+import { initializeApp, getApps } from "firebase/app"
+import { getAuth } from "firebase/auth"
 
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCiJT12Wifbake8f1y27jX_TyLRrjjXipQ",
   authDomain: "what-sappnew.firebaseapp.com",
@@ -13,11 +10,11 @@ const firebaseConfig = {
   appId: "1:182101031250:web:45cbbc3ef8d159cb50e28b"
 };
 
-// Initialize Firebase
-const app = !firebase.apps.length ?
- initializeApp(firebaseConfig) 
- : firebase.app()
+let firebaseApp
 
-export const db = getFirestore(app)
-export const auth = getAuth(app) //after authentication this auth variable will be filled with unique information like user name and id. it can be used later on to identify which author we wanna log out and stuffs
-export const provider = new GoogleAuthProvider()
+if (!getApps().length) {
+  firebaseApp = initializeApp(firebaseConfig)
+}
+
+export const app = firebaseApp
+export const auth = getAuth(app)
