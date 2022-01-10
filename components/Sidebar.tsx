@@ -4,8 +4,17 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { Avatar, Button, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import * as EmailValidator from 'email-validator'
+import {signOut} from 'firebase/auth'
+import { auth, db } from '../firebase-config';
+import { addDoc, query, where, onSnapshot, collection } from 'firebase/firestore'
+import { useCollection } from 'react-firebase-hooks/firestore'
+import Chat from './Chat'
 
 function Sidebar() {
+    const chatCollectionRef = collection(db, "chats")
+    const userChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email));
+    const [chatsSnapshot] = useCollection(userChatRef) //I am using snapshot method from reacthooks bcs idk how to do it using firebase function(gotta check)
+
 
     const createChat = () => {
         const input = prompt(
@@ -13,20 +22,25 @@ function Sidebar() {
 
             if (!input) return null
 
-            if (EmailValidator.validate(input)) {
-                //we need to add the chat in to the DB chats collection
+            if (EmailValidator.validate(input) && !ChatExistsAlrdy(input) && input !== auth.currentUser.email) {  //making sure currentuser doesnt connect with his own chat
+                const chatCollectionRef = collection(db, "chats")   //we need to add the chat in to the DB chats collection
+                addDoc(chatCollectionRef, {                
+                    users: [auth.currentUser.email, input]
+                })
             }
 
     }
 
-
+                                            //using !! to turn the return value in to true or false so that we can use it as a condition above in Create chat function            
+    const ChatExistsAlrdy = (inputEmail) => !!chatsSnapshot?.docs.find(chat => chat.data().users.find(user => user === inputEmail)?.length > 0) //This whole line basically just checks if input Email we pass via propms alrdy exists in chats or not
+    
     return (
         <Container>
 
             {/* Setting up Sidebar Header */}
             <Header>
 
-                <UserAvatar />
+                <UserAvatar src={auth.currentUser?.photoURL} onClick={() => signOut(auth)}/>
 
                 <IconsContainer>
 
@@ -55,6 +69,9 @@ function Sidebar() {
             <SidebarButton onClick={createChat}>Start a new chat</SidebarButton>
             
              {/* list of Chats will come here    */}
+             {chatsSnapshot?.docs.map((chat) => {
+                 return <Chat key={chat.id} id={chat.id} users={chat.data().users}/>
+             })}
             
         </Container>
     )
