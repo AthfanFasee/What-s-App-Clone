@@ -12,8 +12,9 @@ import Chat from './Chat'
 
 function Sidebar() {
     const chatCollectionRef = collection(db, "chats")
-    const userChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email));
-    const [chatsSnapshot] = useCollection(userChatRef) //I am using snapshot method from reacthooks bcs idk how to do it using firebase function(gotta check)
+    const CurrentuserChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email)) //We only need to capture chat documents of the currenUser(Imagine I(athfanathfan@) started a chat with test@gmail.com. I only need to check chat documents where my email also exists in the users array. I dont wanna prevent another user from starting a chat with test@gmail.com. that's why gotta refer only to the chat documents where my email also exists(means those documents are for me or the currentuser LoggedIn)
+    const [chatsSnapshot] = useCollection(CurrentuserChatRef) //I am using snapshot method from reacthooks bcs idk how to do it using firebase function(gotta check)
+
 
 
     const createChat = () => {
@@ -23,17 +24,19 @@ function Sidebar() {
             if (!input) return null
 
             if (EmailValidator.validate(input) && !ChatExistsAlrdy(input) && input !== auth.currentUser.email) {  //making sure currentuser doesnt connect with his own chat
-                const chatCollectionRef = collection(db, "chats")   //we need to add the chat in to the DB chats collection
-                addDoc(chatCollectionRef, {                
+                 
+                addDoc(chatCollectionRef, {        //we need to add the chat in to the DB chats collection (Getting reference above under Sidebar Component)
                     users: [auth.currentUser.email, input]
                 })
             }
 
     }
-
-                                            //using !! to turn the return value in to true or false so that we can use it as a condition above in Create chat function            
+                                        //using !! to turn the return value in to true or false so that we can use it as a condition above in Create chat function(it will retrun true if the function normally returns any value or element)            
     const ChatExistsAlrdy = (inputEmail) => !!chatsSnapshot?.docs.find(chat => chat.data().users.find(user => user === inputEmail)?.length > 0) //This whole line basically just checks if input Email we pass via propms alrdy exists in chats or not
-    
+    //I can do something like this "const isInputAlrdyExists = !!chatSnapshot?.docs.find(chat => chat.data().users.find(user => user === input).length >0" but here I wont be having access to the input value. Bcs that exists inside Createchat function duh.
+    //so that creating a ChatExistsAlrdy function and passing it inside Createchat function and returning true or false right there is a POG move
+    //U can use this trick in ur other projects
+
     return (
         <Container>
 
