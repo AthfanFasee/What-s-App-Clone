@@ -8,20 +8,20 @@ import {auth, db} from '../../firebase-config'
 
 function Chat({chat, messages}) {
 
-
+    const oppositeSideUserEmail = chat.users.filter(user => user !== auth.currentUser?.email)[0]
 
 
     return (
         <Container>
             <Head>
-                <title>Chat</title>
+                <title>Chat with {oppositeSideUserEmail}</title>
             </Head>
             
 
             <Sidebar />
 
             <ChatContainer>
-                <ChatScreen />
+                <ChatScreen chat={chat} messages={messages}/>
             </ChatContainer>
         </Container>
     )
@@ -31,44 +31,43 @@ export default Chat
 
 
 
-// export async function getServerSideProps(context) {
-//     const userCollectionRef = doc(db, "chats", context.query.id)
+export async function getServerSideProps(context) {
+
+    const ref = doc(db, "chats", context.query.id);
+
     
-//     //Prepare messages on the server
-  
-
-
-//     const messagesqueryRef =  query(userCollectionRef, orderBy("timestamp", "asc")); //asc means asscending order
-
-//      const data = await getDocs(messagesqueryRef)
-
-//     const messages = data.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data()
-//     }))
+    //Prepare messages on the server
+    const messagesRef = collection(db, "messages");
     
-//     const ReadyMessages =  messages.map(messages => ({
-//         ...messages,
-//         timestamp: messages.timestamp.toDate().getTime()
-//     }))
+    const theQuery = query(messagesRef, orderBy("timestamp", "asc"));
 
-//     //Prep the chats
-//     const chatRes = await getDoc(userCollectionRef)
-//     const chat = {
-//         id: chatRes.id,
-//         ...chatRes.data()
+    const data = await getDocs(theQuery)
+   
+    const messages = data.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    })).map(messages => ({
+        ...messages,
+        timestamp: messages.timestamp.toDate().getTime()
+    }))
+    
 
-//     }
+    //Prep the chats
+    const chatRes = await getDoc(ref)
+    const chat = {  //this whole function only happens in server.So even if u console.log(chat) u cant see it in webpage instead only in terminal
+        id: chatRes.id,
+        ...chatRes.data() //this right here will return the only data exists in our chat collection which is users array
 
-//     console.log(chat, messages)
+    }
 
-//     return {
-//         props: {
-//             messages: JSON.stringify(messages),
-//             chat: chat
-//         }
-//     }
-// }
+
+    return {
+        props: {
+            messages: JSON.stringify(messages),
+            chat: chat
+        }
+    }
+}
 
 const Container = styled.div`
     display: flex;

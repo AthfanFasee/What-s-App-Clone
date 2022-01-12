@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import * as EmailValidator from 'email-validator'
 import {signOut} from 'firebase/auth'
 import { auth, db } from '../firebase-config';
-import { addDoc, query, where, onSnapshot, collection } from 'firebase/firestore'
+import { addDoc, query, where, onSnapshot, collection, orderBy } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import Chat from './Chat'
 
@@ -16,6 +16,9 @@ function Sidebar() {
     const [chatsSnapshot] = useCollection(CurrentuserChatRef) //I am using snapshot method from reacthooks bcs idk how to do it using firebase function(gotta check)
 
 
+    
+
+      
 
     const createChat = () => {
         const input = prompt(
@@ -83,7 +86,19 @@ function Sidebar() {
 export default Sidebar
 
 const Container = styled.div`
+    flex: 0.45;
+    border-right: 1px solid whitesmoke;
+    height: 100vh;
+    min-width: 300px;
+    max-width: 350px;
+    overflow-y: scroll;
 
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 `
 const Search = styled.div`
     display: flex;
