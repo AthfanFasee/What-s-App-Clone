@@ -2,16 +2,18 @@ import styled from 'styled-components'
 import { auth } from '../firebase-config'
 import moment from 'moment'
 
-function Message({user, message}) {
+function Message({user, message, chat}) {
 
     const MessgeType = user === auth.currentUser?.email ? SenderText : ReceiverText
 
     return (
         <Container>
-            
-                <MessgeType>{message.message}
-                <TimeStamp>{message.timestamp? moment(message.timestamp).format('LT') : "..."}</TimeStamp>
-                </MessgeType>
+                {message.id === chat?.id &&
+                    <MessgeType>{message.message}
+                    <TimeStamp>{message.timestamp? moment(message.timestamp).format('LT') : "..."}</TimeStamp>
+                    </MessgeType>
+                }
+                
             
             
         </Container>

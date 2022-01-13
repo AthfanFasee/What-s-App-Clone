@@ -39,21 +39,20 @@ export async function getServerSideProps(context) {
     //Prepare messages on the server
     
 
-    let MessageQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
- 
-    MessageQuery = query(MessageQuery, where("id", "==", context.query.id));
+    let MessageQuery = query(collection(db, "messages"), where("id", "==", context.query.id), orderBy("timestamp", "asc"));
 
     const data = await getDocs(MessageQuery)
-   
+    
+    
     const messages = data.docs.map(doc => ({
-        id: doc.id,
+        messageId: doc.id, //what's the purpose of this id???
         ...doc.data()
     })).map(messages => ({
         ...messages,
         timestamp: messages.timestamp.toDate().getTime()
     }))
     
-
+ 
     //Prep the chats
     const chatRes = await getDoc(ref)
     const chat = {  //this whole function only happens in server.So even if u console.log(chat) u cant see it in webpage instead only in terminal

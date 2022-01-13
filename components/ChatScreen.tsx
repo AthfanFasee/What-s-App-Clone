@@ -43,7 +43,7 @@ function ChatScreen({chat, messages}) {
         if (messageSnapshot) {
             return messageSnapshot.docs.map(message => (
                 <Message 
-                chat={chat}
+                chat={chat}          //I DONT QUITE UNDERSTAND THIS PART. FOR now what I knw is the if is for static render and else part is for server render and my server render isnt working properly but static render does
                 key={message.id}
                 user={message.data().user}
                 message={{
@@ -52,9 +52,11 @@ function ChatScreen({chat, messages}) {
                 }}
                 />
             ))
-        } else {
+        } else {  //here we are saying before the messagesnapshot even exists just render it from serverside before the client even loads the component.
             return JSON.parse(messages).map(message => (
-                <Message key={message.id} user={message.user} message={message} />
+                <Message key={message.messageId} user={message.user} message={message} chat={chat}/>
+                //My biggest Mistake was here and it was to use same chat.id which exists in all messages coming via server as the key. Instead i should have used something unique for each texts
+                //I never knew a single wrong key could cause this much of a bug!!!!
             ))
         }
     }
@@ -82,7 +84,7 @@ function ChatScreen({chat, messages}) {
 
 
         let messagesRef = collection(db, "messages");
-        messagesRef = query(messagesRef, where("id", "==", router.query.id));
+        
         addDoc(messagesRef, {
             id : chat.id,
             timestamp: serverTimestamp(),
