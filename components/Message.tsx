@@ -1,11 +1,18 @@
 import styled from 'styled-components'
+import { auth } from '../firebase-config'
+import moment from 'moment'
 
-function Message({user, message, chat}) {
+function Message({user, message}) {
+
+    const MessgeType = user === auth.currentUser?.email ? SenderText : ReceiverText
+
     return (
         <Container>
-            {message?.id === chat?.id &&
-                <TextContainer>{message.message}</TextContainer>
-            }
+            
+                <MessgeType>{message.message}
+                <TimeStamp>{message.timestamp? moment(message.timestamp).format('LT') : "..."}</TimeStamp>
+                </MessgeType>
+            
             
         </Container>
     )
@@ -36,4 +43,15 @@ const SenderText = styled(TextContainer)`
 const ReceiverText = styled(TextContainer)`
     background-color: whitesmoke;
     text-align: left;
+`
+
+const TimeStamp = styled.span`
+    color: gray;
+    padding: 10px;
+    font-size: 9px;
+    position: absolute;
+    bottom: 0;
+    text-align: right;
+    right: 0;
+
 `

@@ -1,7 +1,7 @@
 import { Avatar } from '@mui/material'
 import styled from 'styled-components'
 import { auth, db } from '../firebase-config'
-import { addDoc, query, where, onSnapshot, collection } from 'firebase/firestore'
+import { query, where, collection } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import { useRouter } from 'next/router'
 

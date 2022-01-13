@@ -3,7 +3,7 @@ import Head  from 'next/head'
 import styled from 'styled-components'
 import ChatScreen from '../../components/ChatScreen'
 import Sidebar from '../../components/Sidebar'
-import {doc, getDocs, collection, orderBy, query, limit, getDoc, onSnapshot} from 'firebase/firestore'
+import {doc, getDocs, collection, orderBy, query, getDoc, where} from 'firebase/firestore'
 import {auth, db} from '../../firebase-config'
 
 function Chat({chat, messages}) {
@@ -37,11 +37,13 @@ export async function getServerSideProps(context) {
 
     
     //Prepare messages on the server
-    const messagesRef = collection(db, "messages");
     
-    const theQuery = query(messagesRef, orderBy("timestamp", "asc"));
 
-    const data = await getDocs(theQuery)
+    let MessageQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+ 
+    MessageQuery = query(MessageQuery, where("id", "==", context.query.id));
+
+    const data = await getDocs(MessageQuery)
    
     const messages = data.docs.map(doc => ({
         id: doc.id,

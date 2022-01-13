@@ -8,14 +8,14 @@ import { serverTimestamp, addDoc, query, where, onSnapshot, collection, orderBy,
 import { auth, db } from '../firebase-config';
 import Message from './Message';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import TimeAgo from 'timeago-react'
 
 
 
 function ChatScreen({chat, messages}) {
 
-    console.log(messages);
+    const endOfMessagesRef = useRef(null)
     
     const [input, setInput] = useState("")
 
@@ -23,11 +23,11 @@ function ChatScreen({chat, messages}) {
     
     const router = useRouter()   
 
-    const messagesRef = collection(db, "messages");
-    
-    const theQuery = query(messagesRef, orderBy("timestamp", "asc"));
+    let MessageQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+ 
+    MessageQuery = query(MessageQuery, where("id", "==", router.query.id));
 
-    const [messageSnapshot] = useCollection(theQuery) 
+    const [messageSnapshot] = useCollection(MessageQuery) 
     //THIS IS WHERE I NEED TO FIX ERROR AND SHOW MESSAGE ONLY IN THE CORRECT CHAT
 
 
@@ -59,6 +59,15 @@ function ChatScreen({chat, messages}) {
         }
     }
 
+
+    const scrolltoBottom = () => {
+        endOfMessagesRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest"
+        })
+    }
+
     const sendMessage = (event) => {
         event.preventDefault();
 
@@ -72,7 +81,8 @@ function ChatScreen({chat, messages}) {
         }, {merge:true})
 
 
-        const messagesRef = collection(db, "messages");
+        let messagesRef = collection(db, "messages");
+        messagesRef = query(messagesRef, where("id", "==", router.query.id));
         addDoc(messagesRef, {
             id : chat.id,
             timestamp: serverTimestamp(),
@@ -82,6 +92,7 @@ function ChatScreen({chat, messages}) {
         })
 
         setInput("")
+        scrolltoBottom()
     }
     
     const opponenUser = OpponentUserSnapshot?.docs?.[0]?.data()
@@ -125,7 +136,7 @@ function ChatScreen({chat, messages}) {
 
             <MessageContainer>
                 {showMessages()}
-                <EndofMessage />
+                <EndofMessage ref={endOfMessagesRef}/>
             </MessageContainer>
 
             <InputContainer>
@@ -176,7 +187,7 @@ const MessageContainer = styled.div`
     min-height: 90vh;
 `
 const EndofMessage = styled.div`
-
+    margin-bottom: 50px;
 `
 const InputContainer = styled.form`
     display: flex;
