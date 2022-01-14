@@ -13,13 +13,13 @@ import TimeAgo from 'timeago-react'
 import SendIcon from '@mui/icons-material/Send';
 
 
-function ChatScreen({chat, messages}) {
+function ChatScreen({chatfromServer, messages}) {
 
     const endOfMessagesRef = useRef(null)
     
     const [input, setInput] = useState("")
 
-    const oppositeSideUserEmail = chat.users.filter(user => user !== auth.currentUser?.email)[0]
+    const oppositeSideUserEmail = chatfromServer.users.filter(user => user !== auth.currentUser?.email)[0]
     
     const router = useRouter()   
 
@@ -30,8 +30,7 @@ function ChatScreen({chat, messages}) {
     const [messageSnapshot] = useCollection(MessageQuery) 
     //THIS IS WHERE I NEED TO FIX ERROR AND SHOW MESSAGE ONLY IN THE CORRECT CHAT
 
-
-
+    
     const userCollectionRef = collection(db, "users");
     const OpponentChatRef = query(userCollectionRef, where("email", "==", oppositeSideUserEmail))
     const [OpponentUserSnapshot] = useCollection(OpponentChatRef)
@@ -41,10 +40,10 @@ function ChatScreen({chat, messages}) {
     const showMessages = () => {
 
         if (messageSnapshot) {
-            return messageSnapshot.docs.map(message => (
-                <Message 
-                chat={chat}          //I DONT QUITE UNDERSTAND THIS PART. FOR now what I knw is the if is for static render and else part is for server render and my server render isnt working properly but static render does
-                key={message.id}
+            return messageSnapshot.docs.map(message => ( //so basically this part is for static side rendering. When static side render it wont render the chats automatically whenever there's a new chat added to firebase database(whenever the opponent user sends u a message)
+                                                            // in order to make it render automatically we can't use getDoc instead we need to use snapshot here
+                <Message                                       // this static render will only work if server render doesn't         
+                key={message.id} //the id I use here comes from the snapshot I'm taking above(this id is unqiue for each message)
                 user={message.data().user}
                 message={{
                     ...message.data(),
@@ -54,9 +53,9 @@ function ChatScreen({chat, messages}) {
             ))
         } else {  //here we are saying before the messagesnapshot even exists just render it from serverside before the client even loads the component.
             return JSON.parse(messages).map(message => (
-                <Message key={message.messageId} user={message.user} message={message} chat={chat}/>
+                <Message key={message.messageId} user={message.user} message={message}/>
                 //My biggest Mistake was here and it was to use same chat.id which exists in all messages coming via server as the key. Instead i should have used something unique for each texts
-                //I never knew a single wrong key could cause this much of a bug!!!!
+                //I never knew a single wrong key could cause this much of a bug!!!! The id I get from snapshot won't work here bcs this messages data is coming via props from serversideredering duh
             ))
         }
     }
@@ -86,7 +85,7 @@ function ChatScreen({chat, messages}) {
         let messagesRef = collection(db, "messages");
         
         addDoc(messagesRef, {
-            id : chat.id,
+            id : chatfromServer.id,
             timestamp: serverTimestamp(),
             message: input,
             user: auth.currentUser?.email,
