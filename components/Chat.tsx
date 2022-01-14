@@ -12,7 +12,7 @@ function Chat({id, users}) {
 
     const router = useRouter() //default next js function for rooting another component(same as Navigation in React)
 
-    const oppositeSideUserEmail = users.filter(user => user !== auth.currentUser.email)[0]
+    const oppositeSideUserEmail = users.filter(userEmail => userEmail !== auth.currentUser.email)[0]
     //after filtering users array and only getting a single array with opponentUser's email, saving it to a varibale called oppositeSideUserEmail(filter fucntion will always return an array not a single element)
     //oppositeSideUserEmail is a singleelement array now. so we need to get the first element from it in order to get the email alone, that's why using [0]
 
@@ -27,7 +27,7 @@ function Chat({id, users}) {
         router.push(`/chat/${id}`)
     }
 
-    const OpponentUser = OpponentUserSnapshot?.docs?.[0]?.data() //meaning of data() is, if u console.log snapshot.docs.[0] u will find a very confusing array. we are just finding an Object with OpononetUser's info(Ex: photoUrl: "dfsf") there using .data()
+    const OpponentUser = OpponentUserSnapshot?.docs?.[0]?.data() //meaning of data() is, if u console.log snapshot.docs.[0] u will find a very confusing array. we are just finding an Object with OpononetUser's info  there using .data() (Ex: photoUrl: "dfsf")
     
     return (
         <Container onClick={enterChat}>

@@ -1,4 +1,4 @@
-import { Avatar,  IconButton } from '@mui/material'
+import { Avatar,  Button,  IconButton } from '@mui/material'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -10,7 +10,7 @@ import Message from './Message';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import { useState, useRef } from 'react';
 import TimeAgo from 'timeago-react'
-
+import SendIcon from '@mui/icons-material/Send';
 
 
 function ChatScreen({chat, messages}) {
@@ -144,6 +144,8 @@ function ChatScreen({chat, messages}) {
             <InputContainer>
                 <EmojiEmotionsIcon />
                 <Input value={input} onChange={(event) => setInput(event.target.value)}/>
+                <Button disabled={!input} endIcon={<SendIcon />}></Button>
+                
                 <button hidden disabled={!input} type="submit" onClick={sendMessage}></button>
             </InputContainer>
         </Container>
@@ -153,7 +155,7 @@ function ChatScreen({chat, messages}) {
 export default ChatScreen
 
 const Container = styled.div`
-
+   
 `
 const Header = styled.div`
     position: sticky;
