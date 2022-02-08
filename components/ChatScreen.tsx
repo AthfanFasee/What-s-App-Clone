@@ -8,14 +8,16 @@ import { serverTimestamp, addDoc, query, where, onSnapshot, collection, orderBy,
 import { auth, db } from '../firebase-config';
 import Message from './Message';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import TimeAgo from 'timeago-react'
 import SendIcon from '@mui/icons-material/Send';
 
 
 function ChatScreen({chatfromServer, messages}) {
+    
+    const endOfMessagesRef = useRef(null) //for Auto scroll
+    const BeginningMessageRef = useRef(null) //to prevent auto scrolling the first ever message
 
-    const endOfMessagesRef = useRef(null)
     
     const [input, setInput] = useState("")
 
@@ -28,7 +30,7 @@ function ChatScreen({chatfromServer, messages}) {
     MessageQuery = query(MessageQuery, where("id", "==", router.query.id));
 
     const [messageSnapshot] = useCollection(MessageQuery) 
-    //THIS IS WHERE I NEED TO FIX ERROR AND SHOW MESSAGE ONLY IN THE CORRECT CHAT
+    console.log(messageSnapshot?.docs)
 
     
     const userCollectionRef = collection(db, "users");
@@ -36,6 +38,19 @@ function ChatScreen({chatfromServer, messages}) {
     const [OpponentUserSnapshot] = useCollection(OpponentChatRef)
 
 
+    //Preventing auto scroll for the first message
+    useEffect(() => {
+        const scrolltoTop = () => {
+            if(!messages) {
+                BeginningMessageRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                    inline: "nearest"
+                })
+            }
+        }
+        scrolltoTop()
+    })
 
     const showMessages = () => {
 
@@ -43,7 +58,7 @@ function ChatScreen({chatfromServer, messages}) {
             return messageSnapshot.docs.map(message => ( //so basically this part is for static side rendering. When static side render it wont render the chats automatically whenever there's a new chat added to firebase database(whenever the opponent user sends u a message)
                                                             // in order to make it render automatically we can't use getDoc instead we need to use snapshot here
                 <Message                                       // this static render will only work if server render doesn't         
-                key={message.id} //the id I use here comes from the snapshot I'm taking above(this id is unqiue for each message)
+                key={message.id} //the id I use here comes from the snapshot I'm taking above(this id is unqiue for each message. This is not message.data().id(only this id is for defeining to which chat the message belongs and it's not uniuq)
                 user={message.data().user}
                 message={{
                     ...message.data(),
@@ -54,6 +69,7 @@ function ChatScreen({chatfromServer, messages}) {
         } else {  //here we are saying before the messagesnapshot even exists just render it from serverside before the client even loads the component.
             return JSON.parse(messages).map(message => (
                 <Message key={message.messageId} user={message.user} message={message}/>
+                
                 //My biggest Mistake was here and it was to use same chat.id which exists in all messages coming via server as the key. Instead i should have used something unique for each texts
                 //I never knew a single wrong key could cause this much of a bug!!!! The id I get from snapshot won't work here bcs this messages data is coming via props from serversideredering duh
             ))
@@ -62,11 +78,14 @@ function ChatScreen({chatfromServer, messages}) {
 
 
     const scrolltoBottom = () => {
-        endOfMessagesRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "nearest"
-        })
+        if(messageSnapshot?.docs.length>1) {
+            endOfMessagesRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest"
+            })
+        }
+        
     }
 
     const sendMessage = (event) => {
@@ -136,6 +155,7 @@ function ChatScreen({chatfromServer, messages}) {
             </Header>
 
             <MessageContainer>
+                <BeginningofMessage ref={BeginningMessageRef} />
                 {showMessages()}
                 <EndofMessage ref={endOfMessagesRef}/>
             </MessageContainer>
@@ -191,6 +211,9 @@ const MessageContainer = styled.div`
 `
 const EndofMessage = styled.div`
     margin-bottom: 50px;
+`
+const BeginningofMessage = styled.div`
+    margin-top: 1px;
 `
 const InputContainer = styled.form`
     display: flex;

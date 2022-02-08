@@ -5,7 +5,6 @@ import moment from 'moment'
 function Message({user, message}) {
 
     const MessgeType = user === auth.currentUser?.email ? SenderText : ReceiverText
-
     return (
         <Container>
                 
