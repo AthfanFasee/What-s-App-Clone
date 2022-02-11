@@ -1,19 +1,19 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChatIcon from '@mui/icons-material/Chat';
 import { Avatar, Button, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import * as EmailValidator from 'email-validator'
-import {signOut} from 'firebase/auth'
-import { auth, db } from '../firebase-config';
-import { addDoc, query, where, onSnapshot, collection, orderBy } from 'firebase/firestore'
-import { useCollection } from 'react-firebase-hooks/firestore'
-import Chat from './Chat'
+import * as EmailValidator from 'email-validator';
+import {signOut} from 'firebase/auth';
+import { auth, db } from '../../firebase-config';
+import { addDoc, query, where, onSnapshot, collection, orderBy } from 'firebase/firestore';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import Chat from '../Chat/Chat';
 
 function Sidebar() {
-    const chatCollectionRef = collection(db, "chats")
-    const CurrentuserChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email)) //We only need to capture chat documents of the currenUser(Imagine I(athfanathfan@) started a chat with test@gmail.com. I only need to check chat documents where my email also exists in the users array. I dont wanna prevent another user from starting a chat with test@gmail.com. that's why gotta refer only to the chat documents where my email also exists(means those documents are for me or the currentuser LoggedIn)
-    const [chatsSnapshot] = useCollection(CurrentuserChatRef) //I am using snapshot method from reacthooks bcs idk how to do it using firebase function(gotta check)
+    const chatCollectionRef = collection(db, "chats");
+    const CurrentuserChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email)); //We only need to capture chat documents of the currenUser(Imagine I(athfanathfan@) started a chat with test@gmail.com. I only need to check chat documents where my email also exists in the users array. I dont wanna prevent another user from starting a chat with test@gmail.com. that's why gotta refer only to the chat documents where my email also exists(means those documents are for me or the currentuser LoggedIn)
+    const [chatsSnapshot] = useCollection(CurrentuserChatRef);
 
 
     
@@ -24,7 +24,7 @@ function Sidebar() {
         const input = prompt(
             "Please enter an email address for the user you wanna chat with")
 
-            if (!input) return null
+            if (!input) return null;
 
             if (EmailValidator.validate(input) && !ChatExistsAlrdy(input) && input !== auth.currentUser.email) {  //making sure currentuser doesnt connect with his own chat
                  
@@ -33,9 +33,9 @@ function Sidebar() {
                 })
             }
 
-    }
-                                        //using !! to turn the return value in to true or false so that we can use it as a condition above in Create chat function(it will retrun true if the function normally returns any value or element)            
-    const ChatExistsAlrdy = (inputEmail) => !!chatsSnapshot?.docs.find(chat => chat.data().users.find(user => user === inputEmail)?.length > 0) //This whole line basically just checks if input Email we pass via propms alrdy exists in chats or not
+    };
+                                        //using !! to turn the return value in to true or false.       
+    const ChatExistsAlrdy = (inputEmail) => !!chatsSnapshot?.docs.find(chat => chat.data().users.find(user => user === inputEmail)?.length > 0); //This whole line basically just checks if input Email we pass via propms alrdy exists in chats or not
     //I can do something like this "const isInputAlrdyExists = !!chatSnapshot?.docs.find(chat => chat.data().users.find(user => user === input).length >0" but here I wont be having access to the input value. Bcs that exists inside Createchat function duh.
     //so that creating a ChatExistsAlrdy function and making it take the input as an argument and passing it inside Createchat function and giving the input as a parameter while calling it and returning true or false right there is a POG move
     //U can use this trick in ur other projects
@@ -50,8 +50,7 @@ function Sidebar() {
 
                 <IconsContainer>
 
-
-                    {/* Making MaterialIcons Clickable */}
+                    {/* Icon Button will give a clickable effect */}
                     <IconButton> 
                         <ChatIcon />
                     </IconButton>
@@ -60,7 +59,6 @@ function Sidebar() {
                         <MoreVertIcon />
                     </IconButton>
                     
-
                 </IconsContainer>
 
             </Header>
@@ -83,7 +81,7 @@ function Sidebar() {
     )
 }
 
-export default Sidebar
+export default Sidebar;
 
 const Container = styled.div`
     flex: 0.45;

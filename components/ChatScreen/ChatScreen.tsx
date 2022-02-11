@@ -1,41 +1,41 @@
-import { Avatar,  Button,  IconButton } from '@mui/material'
-import { useRouter } from 'next/router'
-import styled from 'styled-components'
+import { Avatar,  Button,  IconButton } from '@mui/material';
+import { useRouter } from 'next/router';
+import styled from 'styled-components';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useCollection } from 'react-firebase-hooks/firestore'
-import { serverTimestamp, addDoc, query, where, onSnapshot, collection, orderBy, doc, setDoc } from 'firebase/firestore'
-import { auth, db } from '../firebase-config';
-import Message from './Message';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { serverTimestamp, addDoc, query, where, onSnapshot, collection, orderBy, doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebase-config';
+import Message from '../Message/Message';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import { useState, useRef, useEffect } from 'react';
-import TimeAgo from 'timeago-react'
+import TimeAgo from 'timeago-react';
 import SendIcon from '@mui/icons-material/Send';
 
 
 function ChatScreen({chatfromServer, messages}) {
     
-    const endOfMessagesRef = useRef(null) //for Auto scroll
-    const BeginningMessageRef = useRef(null) //to prevent auto scrolling the first ever message
+    const endOfMessagesRef = useRef(null);  //for Auto scroll
+    const BeginningMessageRef = useRef(null); //to prevent auto scrolling the first ever message
 
     
-    const [input, setInput] = useState("")
+    const [input, setInput] = useState("");
 
-    const oppositeSideUserEmail = chatfromServer.users.filter(user => user !== auth.currentUser?.email)[0]
+    const oppositeSideUserEmail = chatfromServer.users.filter(user => user !== auth.currentUser?.email)[0];
     
-    const router = useRouter()   
+    const router = useRouter()   ;
 
     let MessageQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
  
     MessageQuery = query(MessageQuery, where("id", "==", router.query.id));
 
-    const [messageSnapshot] = useCollection(MessageQuery) 
-    console.log(messageSnapshot?.docs)
+    const [messageSnapshot] = useCollection(MessageQuery) ;
+    console.log(messageSnapshot?.docs);
 
     
     const userCollectionRef = collection(db, "users");
-    const OpponentChatRef = query(userCollectionRef, where("email", "==", oppositeSideUserEmail))
-    const [OpponentUserSnapshot] = useCollection(OpponentChatRef)
+    const OpponentChatRef = query(userCollectionRef, where("email", "==", oppositeSideUserEmail));
+    const [OpponentUserSnapshot] = useCollection(OpponentChatRef);
 
 
     //Preventing auto scroll for the first message
@@ -47,10 +47,10 @@ function ChatScreen({chatfromServer, messages}) {
                     block: "start",
                     inline: "nearest"
                 })
-            }
+            };
         }
-        scrolltoTop()
-    })
+        scrolltoTop();
+    });
 
     const showMessages = () => {
 
@@ -74,7 +74,7 @@ function ChatScreen({chatfromServer, messages}) {
                 //I never knew a single wrong key could cause this much of a bug!!!! The id I get from snapshot won't work here bcs this messages data is coming via props from serversideredering duh
             ))
         }
-    }
+    };
 
 
     const scrolltoBottom = () => {
@@ -86,13 +86,13 @@ function ChatScreen({chatfromServer, messages}) {
             })
         }
         
-    }
+    };
 
     const sendMessage = (event) => {
         event.preventDefault();
 
         //update the Last seen
-        const userRef = doc(db, "users", auth.currentUser.uid)
+        const userRef = doc(db, "users", auth.currentUser.uid);
 
         setDoc(userRef, {
 
@@ -109,13 +109,13 @@ function ChatScreen({chatfromServer, messages}) {
             message: input,
             user: auth.currentUser?.email,
             photoURL: auth.currentUser?.photoURL
-        })
+        });
 
-        setInput("")
-        scrolltoBottom()
-    }
+        setInput("");
+        scrolltoBottom();
+    };
     
-    const opponenUser = OpponentUserSnapshot?.docs?.[0]?.data()
+    const opponenUser = OpponentUserSnapshot?.docs?.[0]?.data();
 
 
     return (
@@ -171,7 +171,7 @@ function ChatScreen({chatfromServer, messages}) {
     )
 }
 
-export default ChatScreen
+export default ChatScreen;
 
 const Container = styled.div`
    

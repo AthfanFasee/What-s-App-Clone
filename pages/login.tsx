@@ -1,13 +1,13 @@
 import styled from 'styled-components';
-import Head from 'next/head'
+import Head from 'next/head';
 import { Button } from '@mui/material';
 import { auth, provider } from '../firebase-config';
-import {signInWithPopup} from 'firebase/auth'
+import {signInWithPopup} from 'firebase/auth';
 
 function Login() {
 
     const signIn = () => {
-        signInWithPopup(auth, provider).catch(alert)
+        signInWithPopup(auth, provider).catch(alert);
     }
 
     return (
@@ -25,7 +25,7 @@ function Login() {
     )
 }
 
-export default Login
+export default Login;
 
 const Container = styled.div`
     display: grid;

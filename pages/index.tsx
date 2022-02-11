@@ -1,6 +1,6 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Sidebar from '../components/Sidebar'
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Sidebar from '../components/Sidebar/Sidebar';
 
 const Home: NextPage = () => {
   return (
@@ -16,4 +16,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Home;

@@ -1,10 +1,10 @@
-import styled from 'styled-components'
-import { auth } from '../firebase-config'
-import moment from 'moment'
+import styled from 'styled-components';
+import { auth } from '../../firebase-config';
+import moment from 'moment';
 
 function Message({user, message}) {
 
-    const MessgeType = user === auth.currentUser?.email ? SenderText : ReceiverText
+    const MessgeType = user === auth.currentUser?.email ? SenderText : ReceiverText;
     return (
         <Container>
                 
@@ -16,7 +16,7 @@ function Message({user, message}) {
     )
 }
 
-export default Message
+export default Message;
 
 const Container = styled.div`
 

@@ -3,12 +3,12 @@ import{getAuth, GoogleAuthProvider} from 'firebase/auth'
 import {getFirestore} from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCiJT12Wifbake8f1y27jX_TyLRrjjXipQ",
-  authDomain: "what-sappnew.firebaseapp.com",
-  projectId: "what-sappnew",
-  storageBucket: "what-sappnew.appspot.com",
-  messagingSenderId: "182101031250",
-  appId: "1:182101031250:web:45cbbc3ef8d159cb50e28b"
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
 let firebaseApp
