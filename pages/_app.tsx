@@ -9,16 +9,18 @@ import { serverTimestamp, setDoc, doc} from 'firebase/firestore';
 
 function MyApp({ Component, pageProps }: AppProps) {
 
-  //if nobody is SignedIn only rendering the Login component
-  const [user, loading] = useAuthState(auth); //using useAuthState instead simply using auth.currenUser, bcs I want the loading element
+  //using useAuthState instead simply using auth.currenUser, bcs I want the loading element
+  const [user, loading] = useAuthState(auth); 
   
+  //Creating a Document for each user who SignIn to the app
   useEffect(() => {
     if (user) { 
-      const userDocRef = doc(db, "users", user.uid);      //using doc instead of collection to set info of only the current user using his unique id(user.uid or auth.currUser.uid). When using doc need to pass an id as third argument(when using collection we only pass 2 arguments)
-                                                                // also we use doc instead of collection whenever we use setDoc function
-      setDoc(userDocRef, {   //setDoc updates data, also if the data doesnt alrdy exist to update it just creates the data instead showing error               
+      const userDocRef = doc(db, "users", user.uid); 
+            
+      //setDoc updates data, also if the data doesnt alrdy exist to update it just creates the data instead showing error
+      setDoc(userDocRef, {                  
         email: user.email,
-        lastSeen: serverTimestamp(), //consider adding this in ur blog post instead creating ur own time
+        lastSeen: serverTimestamp(),
         photoURL: user.photoURL
     }, {merge: true})
     }
@@ -27,6 +29,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   //Rendering Loading while user reloads the page or right after SignIn
   if (loading) return <Loading />;
 
+
+  //if nobody is SignedIn only rendering the Login component
   if (!user) return <Login/>;
   return (
     

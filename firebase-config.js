@@ -11,6 +11,13 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
+console.log(process.env.NEXT_PUBLIC_API_KEY)
+console.log(process.env.NEXT_PUBLIC_AUTH_DOMAIN)
+console.log(process.env.NEXT_PUBLIC_PROJECT_ID)
+console.log(process.env.NEXT_PUBLIC_STORAGE_BUCKET)
+console.log(process.env.NEXT_PUBLIC_MESSAGINGSENDER_ID)
+console.log(process.env.NEXT_PUBLIC_APP_ID)
+
 let firebaseApp
 
 if (!getApps().length) {

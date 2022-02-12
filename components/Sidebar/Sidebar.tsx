@@ -12,13 +12,9 @@ import Chat from '../Chat/Chat';
 
 function Sidebar() {
     const chatCollectionRef = collection(db, "chats");
-    const CurrentuserChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email)); //We only need to capture chat documents of the currenUser(Imagine I(athfanathfan@) started a chat with test@gmail.com. I only need to check chat documents where my email also exists in the users array. I dont wanna prevent another user from starting a chat with test@gmail.com. that's why gotta refer only to the chat documents where my email also exists(means those documents are for me or the currentuser LoggedIn)
+    const CurrentuserChatRef = query(chatCollectionRef, where("users", "array-contains", auth.currentUser.email)); 
     const [chatsSnapshot] = useCollection(CurrentuserChatRef);
-
-
-    
-
-      
+  
 
     const createChat = () => {
         const input = prompt(
@@ -28,17 +24,14 @@ function Sidebar() {
 
             if (EmailValidator.validate(input) && !ChatExistsAlrdy(input) && input !== auth.currentUser.email) {  //making sure currentuser doesnt connect with his own chat
                  
-                addDoc(chatCollectionRef, {        //we need to add the chat in to the DB chats collection (Getting reference above under Sidebar Component)
+                addDoc(chatCollectionRef, {        
                     users: [auth.currentUser.email, input]
                 })
             }
-
     };
                                         //using !! to turn the return value in to true or false.       
     const ChatExistsAlrdy = (inputEmail) => !!chatsSnapshot?.docs.find(chat => chat.data().users.find(user => user === inputEmail)?.length > 0); //This whole line basically just checks if input Email we pass via propms alrdy exists in chats or not
-    //I can do something like this "const isInputAlrdyExists = !!chatSnapshot?.docs.find(chat => chat.data().users.find(user => user === input).length >0" but here I wont be having access to the input value. Bcs that exists inside Createchat function duh.
-    //so that creating a ChatExistsAlrdy function and making it take the input as an argument and passing it inside Createchat function and giving the input as a parameter while calling it and returning true or false right there is a POG move
-    //U can use this trick in ur other projects
+    
 
     return (
         <Container>
@@ -72,7 +65,7 @@ function Sidebar() {
             
             <SidebarButton onClick={createChat}>Start a new chat</SidebarButton>
             
-             {/* list of Chats will come here    */}
+             {/* list of Chats will come here */}
              {chatsSnapshot?.docs.map((chat) => {
                  return <Chat key={chat.id} id={chat.id} users={chat.data().users}/>
              })}

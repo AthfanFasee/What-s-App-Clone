@@ -13,7 +13,7 @@ import TimeAgo from 'timeago-react';
 import SendIcon from '@mui/icons-material/Send';
 
 
-function ChatScreen({chatfromServer, messages}) {
+function ChatScreen({chatfromServer, messagesFromServer}) {
     
     const endOfMessagesRef = useRef(null);  //for Auto scroll
     const BeginningMessageRef = useRef(null); //to prevent auto scrolling the first ever message
@@ -25,14 +25,13 @@ function ChatScreen({chatfromServer, messages}) {
     
     const router = useRouter()   ;
 
+
+    //Snap Shotting Messages which belongs to a single chat (This is for client Side rendering incase SSR doesn't work)
     let MessageQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
- 
     MessageQuery = query(MessageQuery, where("id", "==", router.query.id));
-
     const [messageSnapshot] = useCollection(MessageQuery) ;
-    console.log(messageSnapshot?.docs);
 
-    
+    //Getting Opposite Side User info to show in Header section
     const userCollectionRef = collection(db, "users");
     const OpponentChatRef = query(userCollectionRef, where("email", "==", oppositeSideUserEmail));
     const [OpponentUserSnapshot] = useCollection(OpponentChatRef);
@@ -41,7 +40,7 @@ function ChatScreen({chatfromServer, messages}) {
     //Preventing auto scroll for the first message
     useEffect(() => {
         const scrolltoTop = () => {
-            if(!messages) {
+            if(!messagesFromServer) {
                 BeginningMessageRef.current.scrollIntoView({
                     behavior: "smooth",
                     block: "start",
@@ -54,11 +53,11 @@ function ChatScreen({chatfromServer, messages}) {
 
     const showMessages = () => {
 
+        // This static render will only work if server render doesn't 
         if (messageSnapshot) {
-            return messageSnapshot.docs.map(message => ( //so basically this part is for static side rendering. When static side render it wont render the chats automatically whenever there's a new chat added to firebase database(whenever the opponent user sends u a message)
-                                                            // in order to make it render automatically we can't use getDoc instead we need to use snapshot here
-                <Message                                       // this static render will only work if server render doesn't         
-                key={message.id} //the id I use here comes from the snapshot I'm taking above(this id is unqiue for each message. This is not message.data().id(only this id is for defeining to which chat the message belongs and it's not uniuq)
+            return messageSnapshot.docs.map(message => ( 
+                <Message                                               
+                key={message.id}                         //the id I use here comes from the snapshot I'm taking above(this id is unqiue for each message. This is not message.data().id(only this id is for defeining to which chat the message belongs and it's not unique)
                 user={message.data().user}
                 message={{
                     ...message.data(),
@@ -66,12 +65,9 @@ function ChatScreen({chatfromServer, messages}) {
                 }}
                 />
             ))
-        } else {  //here we are saying before the messagesnapshot even exists just render it from serverside before the client even loads the component.
-            return JSON.parse(messages).map(message => (
+        } else {  //Here we are saying before the messagesnapshot even exists just render it from serverside before the client even loads the component.
+            return JSON.parse(messagesFromServer).map(message => (
                 <Message key={message.messageId} user={message.user} message={message}/>
-                
-                //My biggest Mistake was here and it was to use same chat.id which exists in all messages coming via server as the key. Instead i should have used something unique for each texts
-                //I never knew a single wrong key could cause this much of a bug!!!! The id I get from snapshot won't work here bcs this messages data is coming via props from serversideredering duh
             ))
         }
     };
@@ -91,7 +87,7 @@ function ChatScreen({chatfromServer, messages}) {
     const sendMessage = (event) => {
         event.preventDefault();
 
-        //update the Last seen
+        //updating User who sends the message's Last seen
         const userRef = doc(db, "users", auth.currentUser.uid);
 
         setDoc(userRef, {
@@ -104,7 +100,7 @@ function ChatScreen({chatfromServer, messages}) {
         let messagesRef = collection(db, "messages");
         
         addDoc(messagesRef, {
-            id : chatfromServer.id,
+            id : chatfromServer.id,                  //We use this id later in SSR to query messages belongs to chat with this id
             timestamp: serverTimestamp(),
             message: input,
             user: auth.currentUser?.email,
@@ -126,10 +122,9 @@ function ChatScreen({chatfromServer, messages}) {
                     <Avatar>{oppositeSideUserEmail[0]}</Avatar>
                 )}
                 
-
                 <HeaderInfo>
-
                     <h3>{oppositeSideUserEmail}</h3>
+                    {/* Showing Last seen */}
                     {messageSnapshot ? (
                         <p>Last active: {` `}
                         {opponenUser?.lastSeen?.toDate() ? (
