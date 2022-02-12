@@ -5,6 +5,7 @@ import ChatScreen from '../../components/ChatScreen/ChatScreen';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {doc, getDocs, collection, orderBy, query, getDoc, where} from 'firebase/firestore';
 import {auth, db} from '../../firebase-config';
+import { GetServerSideProps } from 'next';
 
 function Chat({chatfromServer, messagesFromServer}) { //chatfromServer will be having an id property but chats collection from friebase wont have one, bcs this chat right here is coming from serversiderendering after id is added
 
@@ -30,7 +31,7 @@ export default Chat;
 
 
 
-export async function getServerSideProps(context) { //U can look at this function as some useEffect function but it runs before the component is even rendered bcs It is server side rendering
+export async function getServerSideProps(context) :GetServerSideProps { //U can look at this function as some useEffect function but it runs before the component is even rendered bcs It is server side rendering
     
     //Prepare messages on server   
 
