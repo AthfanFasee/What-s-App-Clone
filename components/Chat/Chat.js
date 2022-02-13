@@ -22,7 +22,7 @@ function Chat({id, users}) {
     const [OpponentUserSnapshot] = useCollection(OpponentChatRef);
    
     const enterChat = () => {
-        router.push(`/chat/${id}`);
+        router.push(`https://what-s-app-clone-git-main-athfanfasee.vercel.app/chat/${id}`);
     }
 
     const OpponentUser = OpponentUserSnapshot?.docs?.[0]?.data(); //meaning of data() is, if u console.log snapshot.docs.[0] u will find a very confusing array. we are just finding an Object with OpononetUser's info there using .data() (Ex: photoUrl: "dfsf")
