@@ -1,11 +1,11 @@
-
 import Head  from 'next/head';
 import styled from 'styled-components';
 import ChatScreen from '../../components/ChatScreen/ChatScreen';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import {doc, getDocs, collection, orderBy, query, getDoc, where} from 'firebase/firestore';
 import {auth, db} from '../../firebase-config';
-
+import {getFirestore} from 'firebase/firestore'
+import {app} from 'firebase/firestore'
 
 function Chat({chatfromServer, messagesFromServer}) { //chatfromServer will be having an id property but chats collection from friebase wont have one, bcs this chat right here is coming from serversiderendering after id is added
 
@@ -35,7 +35,7 @@ export async function getServerSideProps(context) { //U can look at this functio
     
     //Prepare messages on server   
 
-    let MessageQuery = query(collection(db, "messages"), where("id", "==", context.query.id), orderBy("timestamp", "asc")); 
+    let MessageQuery = query(collection(getFirestore(app), "messages"), where("id", "==", context.query.id), orderBy("timestamp", "asc")); 
     
     //here we use getDocs not getDoc, it works like a query snapshot in that way in can render each time a new message is added
     const data = await getDocs(MessageQuery);
@@ -51,7 +51,7 @@ export async function getServerSideProps(context) { //U can look at this functio
     
  
     //Prep the chats on Server
-    const ref = doc(db, "chats", context.query.id); //context will give u an id which referes to page URL (chat/id(the id we got from snapshots bcs in chat component when we did route we used the id from snapshot to root those unique chat pages))
+    const ref = doc(getFirestore(app), "chats", context.query.id); //context will give u an id which referes to page URL (chat/id(the id we got from snapshots bcs in chat component when we did route we used the id from snapshot to root those unique chat pages))
 
     const chatData = await getDoc(ref) //in here we use getDoc not getDocs bcs it's not a snapshot as the data is only needed once and it doesnt need a livetime update unlike query snapshot
     const chat = {  

@@ -1,6 +1,6 @@
-import { initializeApp, getApps } from "firebase/app"
-import{getAuth, GoogleAuthProvider} from 'firebase/auth'
-import {getFirestore} from 'firebase/firestore'
+import { initializeApp, getApps } from "firebase/app";
+import{getAuth, GoogleAuthProvider} from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -15,13 +15,13 @@ const firebaseConfig = {
 let firebaseApp
 
 if (!getApps().length) {
-  firebaseApp = initializeApp(firebaseConfig)
+  firebaseApp = initializeApp(firebaseConfig);
 }
 
-const app = firebaseApp
+export const app = firebaseApp;
 
 
-export const db = getFirestore(app)
-export const auth = getAuth(app) //after authentication this auth variable will be filled with unique information like user name and id. it can be used later on to identify which author we wanna log out and stuffs
-export const provider = new GoogleAuthProvider()
+export const db = getFirestore(app);
+export const auth = getAuth(app); //after authentication this auth variable will be filled with unique information like user name and id. it can be used later on to identify which author we wanna log out and stuffs
+export const provider = new GoogleAuthProvider();
 
