@@ -1,5 +1,4 @@
 import '../styles/globals.css';
-import type { AppProps } from 'next/app';
 import {useAuthState} from 'react-firebase-hooks/auth';
 import {auth, db} from '../firebase-config';
 import Login from './login';
@@ -7,7 +6,7 @@ import Loading from '../components/Loading/Loading';
 import { useEffect } from 'react';
 import { serverTimestamp, setDoc, doc} from 'firebase/firestore';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }) {
 
   //using useAuthState instead simply using auth.currenUser, bcs I want the loading element
   const [user, loading] = useAuthState(auth); 
